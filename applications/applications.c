@@ -48,6 +48,7 @@ extern int32_t text_box_test_app(void* p);
 // Plugins
 extern int32_t music_player_app(void* p);
 extern int32_t snake_game_app(void* p);
+extern int32_t tetris_game_app(void *p);
 
 // On system start hooks declaration
 extern void bt_on_system_start();
@@ -341,17 +342,29 @@ const FlipperApplication FLIPPER_PLUGINS[] = {
      .icon = &A_Plugins_14,
      .flags = FlipperApplicationFlagDefault},
 #endif
-
-#ifdef APP_SNAKE_GAME
-    {.app = snake_game_app,
-     .name = "Snake Game",
-     .stack_size = 1024,
-     .icon = &A_Plugins_14,
-     .flags = FlipperApplicationFlagDefault},
-#endif
 };
 
 const size_t FLIPPER_PLUGINS_COUNT = COUNT_OF(FLIPPER_PLUGINS);
+
+const FlipperApplication FLIPPER_GAMES[] = {
+  #ifdef APP_SNAKE_GAME
+      {.app = snake_game_app,
+       .name = "Snake Game",
+       .stack_size = 1024,
+       .icon = &A_Games_14,
+       .flags = FlipperApplicationFlagDefault},
+  #endif
+
+  #ifdef APP_TETRIS_GAME
+    {.app = tetris_game_app,
+  	 .name = "Tetris Game",
+  	 .stack_size = 1024,
+  	 .icon = &A_Games_14,
+     .flags = FlipperApplicationFlagDefault},
+  #endif
+};
+
+const size_t FLIPPER_GAMES_COUNT = COUNT_OF(FLIPPER_GAMES);
 
 // Plugin menu
 const FlipperApplication FLIPPER_DEBUG_APPS[] = {
