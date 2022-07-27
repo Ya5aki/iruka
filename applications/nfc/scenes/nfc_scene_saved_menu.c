@@ -27,13 +27,11 @@ void nfc_scene_saved_menu_on_enter(void* context) {
             SubmenuIndexEmulate,
             nfc_scene_saved_menu_submenu_callback,
             nfc);
-    } else if(nfc->dev->format == NfcDeviceSaveFormatMifareUl) {
+    } else if(
+        nfc->dev->format == NfcDeviceSaveFormatMifareUl ||
+        nfc->dev->format == NfcDeviceSaveFormatMifareClassic) {
         submenu_add_item(
-            submenu,
-            "Emulate Ultralight",
-            SubmenuIndexEmulate,
-            nfc_scene_saved_menu_submenu_callback,
-            nfc);
+            submenu, "Emulate", SubmenuIndexEmulate, nfc_scene_saved_menu_submenu_callback, nfc);
     }
     submenu_add_item(
         submenu, "Edit UID and Name", SubmenuIndexEdit, nfc_scene_saved_menu_submenu_callback, nfc);
@@ -63,7 +61,9 @@ bool nfc_scene_saved_menu_on_event(void* context, SceneManagerEvent event) {
         scene_manager_set_scene_state(nfc->scene_manager, NfcSceneSavedMenu, event.event);
         if(event.event == SubmenuIndexEmulate) {
             if(nfc->dev->format == NfcDeviceSaveFormatMifareUl) {
-                scene_manager_next_scene(nfc->scene_manager, NfcSceneEmulateMifareUl);
+                scene_manager_next_scene(nfc->scene_manager, NfcSceneMfUltralightEmulate);
+            } else if(nfc->dev->format == NfcDeviceSaveFormatMifareClassic) {
+                scene_manager_next_scene(nfc->scene_manager, NfcSceneMfClassicEmulate);
             } else {
                 scene_manager_next_scene(nfc->scene_manager, NfcSceneEmulateUid);
             }
@@ -78,7 +78,7 @@ bool nfc_scene_saved_menu_on_event(void* context, SceneManagerEvent event) {
             scene_manager_next_scene(nfc->scene_manager, NfcSceneDeviceInfo);
             consumed = true;
         } else if(event.event == SubmenuIndexRestoreOriginal) {
-            if(!nfc_device_restore(nfc->dev)) {
+            if(!nfc_device_restore(nfc->dev, true)) {
                 scene_manager_search_and_switch_to_previous_scene(
                     nfc->scene_manager, NfcSceneStart);
             } else {
